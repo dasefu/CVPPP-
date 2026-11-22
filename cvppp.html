@@ -1,0 +1,1693 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CVPPP 対話トレーニング｜佐藤さんとのディエスカレーション</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Tone.js for subtle sound effects -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+  <!-- Google Fonts: Noto Sans JP & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Noto+Sans+JP:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            cream: {
+              50: '#FDFBF7',
+              100: '#F8F4EC',
+              200: '#EFE7D8'
+            }
+          },
+          fontFamily: {
+            sans: ['"Noto Sans JP"', '"Inter"', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      font-family: 'Noto Sans JP', 'Inter', sans-serif;
+      background-color: #F6F4EE;
+      color: #1E293B;
+      overflow-x: hidden;
+    }
+
+    /* 興奮度上昇時のシェイク */
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      15% { transform: translateX(-7px) rotate(-0.6deg); }
+      30% { transform: translateX(7px) rotate(0.6deg); }
+      45% { transform: translateX(-5px) rotate(-0.4deg); }
+      60% { transform: translateX(5px) rotate(0.4deg); }
+      75% { transform: translateX(-2px); }
+    }
+    .animate-shake {
+      animation: shake 0.42s cubic-bezier(.36,.07,.19,.97) both;
+    }
+
+    /* キャラクターの穏やかな呼吸 */
+    @keyframes breathe {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-4px); }
+    }
+    .animate-breathe {
+      animation: breathe 3.2s ease-in-out infinite;
+    }
+
+    /* 激怒時の震え */
+    @keyframes tremble {
+      0%, 100% { transform: translate(0, 0); }
+      25% { transform: translate(-2px, 1px); }
+      50% { transform: translate(2px, -1px); }
+      75% { transform: translate(-1px, -2px); }
+    }
+    .animate-tremble {
+      animation: tremble 0.16s linear infinite;
+    }
+
+    /* 数値変動ポップアップ */
+    @keyframes deltaPop {
+      0% { opacity: 0; transform: translateY(8px) scale(0.75); }
+      20% { opacity: 1; transform: translateY(-4px) scale(1.1); }
+      80% { opacity: 1; transform: translateY(-14px) scale(1); }
+      100% { opacity: 0; transform: translateY(-22px) scale(0.92); }
+    }
+    .delta-badge {
+      animation: deltaPop 1.45s ease-out forwards;
+      pointer-events: none;
+    }
+
+    /* パーティクル上昇 */
+    @keyframes riseFade {
+      0% { opacity: 0; transform: translateY(10px) scale(0.6); }
+      25% { opacity: 1; transform: translateY(-10px) scale(1.08); }
+      100% { opacity: 0; transform: translateY(-54px) scale(1.2); }
+    }
+    .particle-rise {
+      animation: riseFade 1.2s ease-out forwards;
+      pointer-events: none;
+    }
+
+    /* 録音中パルス */
+    @keyframes micPulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(225, 29, 72, 0.55); }
+      50% { box-shadow: 0 0 0 10px rgba(225, 29, 72, 0); }
+    }
+    .mic-recording {
+      animation: micPulse 1.2s infinite;
+    }
+
+    /* 録音中の波形 */
+    @keyframes waveBounce {
+      0%, 100% { transform: scaleY(0.28); }
+      50% { transform: scaleY(1); }
+    }
+    .wave-bar {
+      width: 4px;
+      height: 18px;
+      border-radius: 999px;
+      background-color: #E11D48;
+      animation: waveBounce 0.72s ease-in-out infinite;
+    }
+    .wave-bar:nth-child(2) { animation-delay: 0.12s; }
+    .wave-bar:nth-child(3) { animation-delay: 0.24s; }
+    .wave-bar:nth-child(4) { animation-delay: 0.36s; }
+    .wave-bar:nth-child(5) { animation-delay: 0.48s; }
+
+    /* ローディングドット */
+    @keyframes dotPulse {
+      0%, 80%, 100% { transform: scale(0.5); opacity: 0.4; }
+      40% { transform: scale(1); opacity: 1; }
+    }
+    .loading-dot {
+      animation: dotPulse 1.2s infinite ease-in-out both;
+    }
+    .loading-dot:nth-child(2) { animation-delay: 0.18s; }
+    .loading-dot:nth-child(3) { animation-delay: 0.36s; }
+
+    /* カスタムスクロールバー */
+    .custom-scroll::-webkit-scrollbar {
+      width: 6px;
+    }
+    .custom-scroll::-webkit-scrollbar-track {
+      background: #F1F5F9;
+      border-radius: 999px;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb {
+      background: #CBD5E1;
+      border-radius: 999px;
+    }
+
+    .press-btn {
+      transition: transform 0.12s ease, box-shadow 0.12s ease, background-color 0.15s ease;
+    }
+    .press-btn:active:not(:disabled) {
+      transform: translateY(1.5px);
+    }
+  </style>
+</head>
+<body id="app-body" class="min-h-screen flex flex-col items-center justify-center p-2 sm:p-4 transition-colors duration-700">
+
+  <!-- メインカードコンテナ -->
+  <main id="game-container" class="w-full max-w-3xl bg-white rounded-3xl shadow-xl shadow-slate-200/70 border border-slate-200/90 overflow-hidden relative">
+
+    <!-- ==================== 1. シンプル＆スタイリッシュなタイトル画面 ==================== -->
+    <section id="screen-title" class="p-7 sm:p-11 bg-gradient-to-b from-cream-50 via-white to-teal-50/40 text-center">
+      <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-teal-50 text-teal-800 border border-teal-200/80 text-xs font-bold tracking-wide mb-5">
+        <span class="w-2 h-2 rounded-full bg-teal-500"></span>
+        <span>CVPPP 言語的ディエスカレーション実践</span>
+      </div>
+
+      <h1 class="text-2xl sm:text-4xl font-extrabold text-slate-800 tracking-tight mb-2">
+        精神科 対話トレーニング
+      </h1>
+      <p class="text-sm sm:text-base font-bold text-teal-700 mb-7">
+        Case 1：佐藤 健一さん（40代男性・入院中）
+      </p>
+
+      <!-- キャラクター＆ケース概要（3行以内） -->
+      <div class="max-w-xl mx-auto bg-white rounded-2xl p-5 sm:p-6 border border-slate-200/80 shadow-sm mb-8">
+        <div class="flex flex-col sm:flex-row items-center gap-5 text-left">
+          <div id="title-avatar" class="w-24 h-24 sm:w-28 sm:h-28 shrink-0 rounded-2xl bg-cream-100 border-2 border-slate-200 flex items-center justify-center overflow-hidden shadow-inner">
+            <!-- JSでSVG挿入 -->
+          </div>
+          <div class="space-y-2 text-sm sm:text-[15px] text-slate-700 leading-relaxed">
+            <p class="font-bold text-slate-800">
+              デイルームで「もう限界だ！今すぐ外に出してくれ！」と強い口調で訴える佐藤さん。
+            </p>
+            <p class="text-slate-600 text-xs sm:text-sm">
+              背景には家族への強い心配と、話を聴いてもらえない孤独感があります。病棟スタッフとして最大6ターンで対話し、安心感を引き出して沈静化を目指しましょう。
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 開始ボタン -->
+      <button id="btn-start" class="press-btn w-full sm:w-auto px-10 py-4 rounded-2xl bg-teal-600 hover:bg-teal-700 text-white font-extrabold text-base sm:text-lg shadow-lg shadow-teal-600/20 inline-flex items-center justify-center gap-2.5">
+        <span>対話をはじめる</span>
+        <span aria-hidden="true">→</span>
+      </button>
+
+      <p class="mt-4 text-[11px] text-slate-400">
+        音声（マイク録音）またはテキスト入力でリアルタイムに対話できます
+      </p>
+    </section>
+
+    <!-- ==================== 2. 対話パート（本編） ==================== -->
+    <section id="screen-play" class="hidden flex flex-col">
+
+      <!-- 上部：リアルタイム2軸ゲージ＆ステータスバー（常時表示） -->
+      <header class="bg-slate-800 text-white px-4 py-3.5 sm:px-6">
+        <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+          <div class="flex items-center gap-2">
+            <span class="px-2.5 py-0.5 rounded-full bg-teal-500/20 text-teal-200 border border-teal-400/30 text-xs font-bold">
+              佐藤 健一さん
+            </span>
+            <span id="turn-badge" class="px-2.5 py-0.5 rounded-full bg-amber-400/20 text-amber-200 border border-amber-400/30 text-xs font-bold tabular-nums">
+              ターン 0 / 6
+            </span>
+          </div>
+
+          <div class="flex items-center gap-1.5">
+            <button id="btn-review-now" class="press-btn px-2.5 py-1.5 rounded-xl bg-teal-600/90 hover:bg-teal-500 text-white text-xs font-bold transition disabled:opacity-40 disabled:cursor-not-allowed" title="現在の時点で振り返りレポートを見る">
+              📋 今の時点で振り返る
+            </button>
+            <button id="btn-toggle-sound" class="press-btn px-2.5 py-1.5 rounded-xl bg-slate-700 hover:bg-slate-600 text-xs font-bold transition" title="効果音 ON/OFF">
+              🔊
+            </button>
+          </div>
+        </div>
+
+        <!-- 2軸パラメータゲージ -->
+        <div class="grid grid-cols-2 gap-3 sm:gap-5">
+          <!-- 興奮度 -->
+          <div class="relative">
+            <div class="flex justify-between items-baseline text-xs font-bold mb-1">
+              <span class="text-rose-300">🔥 興奮度 <span class="hidden sm:inline text-[10px] text-slate-400 font-normal">(25以下で沈静化 / 100で終了)</span></span>
+              <span id="excitement-value" class="text-rose-100 tabular-nums text-sm">70</span>
+            </div>
+            <div class="w-full h-3 bg-slate-700 rounded-full overflow-hidden p-0.5">
+              <div id="excitement-bar" class="h-full rounded-full bg-gradient-to-r from-amber-400 via-orange-500 to-rose-600 transition-all duration-500" style="width: 70%;"></div>
+            </div>
+            <div id="excitement-delta-slot" class="absolute -top-2 right-7"></div>
+          </div>
+
+          <!-- 安心・信頼度 -->
+          <div class="relative">
+            <div class="flex justify-between items-baseline text-xs font-bold mb-1">
+              <span class="text-emerald-300">💚 安心・信頼度 <span class="hidden sm:inline text-[10px] text-slate-400 font-normal">(80以上で成功)</span></span>
+              <span id="trust-value" class="text-emerald-100 tabular-nums text-sm">20</span>
+            </div>
+            <div class="w-full h-3 bg-slate-700 rounded-full overflow-hidden p-0.5">
+              <div id="trust-bar" class="h-full rounded-full bg-gradient-to-r from-teal-400 to-emerald-400 transition-all duration-500" style="width: 20%;"></div>
+            </div>
+            <div id="trust-delta-slot" class="absolute -top-2 right-7"></div>
+          </div>
+        </div>
+      </header>
+
+      <!-- 中央：キャラクター＆会話ステージ -->
+      <div id="stage-area" class="relative bg-gradient-to-b from-cream-50 via-white to-slate-50/70 px-4 pt-5 pb-4 sm:px-6 border-b border-slate-200 transition-colors duration-500">
+        <!-- パーティクル演出レイヤー -->
+        <div id="particle-layer" class="absolute inset-0 overflow-hidden pointer-events-none z-20"></div>
+
+        <div class="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-5 relative z-10">
+          <!-- 左：佐藤さんSVGアバター（6段階表情） -->
+          <div class="flex flex-col items-center shrink-0">
+            <div id="avatar-frame" class="w-36 h-36 sm:w-40 sm:h-40 rounded-3xl bg-white border-4 border-orange-300 shadow-md flex items-center justify-center overflow-hidden transition-colors duration-300">
+              <!-- JSでSVG描画 -->
+            </div>
+            <span id="emotion-badge" class="mt-2 px-3 py-0.5 rounded-full bg-orange-100 text-orange-800 text-xs font-extrabold shadow-sm">
+              状態：イライラ
+            </span>
+          </div>
+
+          <!-- 右：佐藤さんのセリフ＋心の声＋直前のプレイヤー発言 -->
+          <div class="flex-1 w-full space-y-2.5">
+            <!-- 佐藤さんの返答吹き出し -->
+            <div class="bg-white rounded-2xl p-4 border-2 border-slate-200 shadow-sm relative">
+              <div class="flex items-center justify-between gap-2 mb-1.5">
+                <span class="text-xs font-extrabold text-slate-500">佐藤 健一さん（40代・入院中）</span>
+                <!-- ローディング演出 -->
+                <div id="thinking-badge" class="hidden flex items-center gap-1.5 text-xs font-bold text-teal-700 bg-teal-50 px-2.5 py-0.5 rounded-full border border-teal-200">
+                  <span id="thinking-text">佐藤さんが反応を考えています</span>
+                  <span class="inline-flex gap-0.5">
+                    <span class="loading-dot w-1.5 h-1.5 rounded-full bg-teal-600"></span>
+                    <span class="loading-dot w-1.5 h-1.5 rounded-full bg-teal-600"></span>
+                    <span class="loading-dot w-1.5 h-1.5 rounded-full bg-teal-600"></span>
+                  </span>
+                </div>
+              </div>
+              <p id="patient-speech" class="text-sm sm:text-base font-bold text-slate-800 leading-relaxed min-h-[3.25rem]">
+                「もう限界だ！今すぐ外に出してくれ！なんで俺だけ閉じ込められなきゃいけないんだ！」
+              </p>
+            </div>
+
+            <!-- 佐藤さんの心の声（本音チラ見え） -->
+            <div class="flex items-start gap-2 pl-1 sm:pl-3">
+              <span class="text-base shrink-0 mt-0.5" aria-hidden="true">💭</span>
+              <div class="flex-1 bg-cream-100/90 border border-dashed border-amber-300/90 rounded-2xl px-3.5 py-2 text-xs sm:text-sm text-amber-950">
+                <span class="font-extrabold text-[11px] text-amber-800/90 block mb-0.5">佐藤さんの心の声（本音）</span>
+                <span id="patient-thought" class="italic text-slate-700">（家のことが心配でたまらないのに…どうせここじゃ誰も俺の話をちゃんと聴いてくれないんだろ…）</span>
+              </div>
+            </div>
+
+            <!-- 直前のプレイヤー発言＆音声トーン評価 -->
+            <div id="last-player-card" class="hidden bg-teal-50/70 border border-teal-200/80 rounded-2xl px-3.5 py-2 text-xs sm:text-sm text-slate-800">
+              <div class="flex flex-wrap items-center justify-between gap-1.5 mb-0.5">
+                <span id="last-player-label" class="font-extrabold text-[11px] text-teal-800">あなたの声かけ</span>
+                <span id="voice-tone-pill" class="hidden px-2 py-0.5 rounded-full bg-white text-teal-800 border border-teal-200 text-[11px] font-bold"></span>
+              </div>
+              <p id="last-player-text" class="text-slate-700"></p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- マキ先輩の即時フィードバック＆CVPPPスキルタグ -->
+      <div class="bg-slate-50/90 px-4 py-3.5 sm:px-6 border-b border-slate-200">
+        <div class="flex items-start gap-3">
+          <div class="w-11 h-11 shrink-0 rounded-2xl bg-teal-700 text-white flex items-center justify-center text-xl shadow-sm border-2 border-white" aria-hidden="true">
+            👩‍⚕️
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="flex flex-wrap items-center gap-2 mb-1">
+              <span class="text-xs font-extrabold text-slate-800">マキ先輩（CVPPPトレーナー）</span>
+              <!-- スキルタグ一覧 -->
+              <div id="turn-tags" class="flex flex-wrap gap-1.5">
+                <span class="px-2 py-0.5 rounded-full bg-teal-100 text-teal-800 text-[11px] font-bold">まずは感情を受け止めよう</span>
+              </div>
+            </div>
+            <p id="senpai-comment" class="text-xs sm:text-sm text-slate-700 leading-relaxed">
+              佐藤さん、かなり切羽詰まってるね！いきなりルールで押さえつけず、まずは「何がそんなに気になっているのか」に寄り添う声かけから入ってみよう。
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 折りたたみ可能な会話ログ（メイン画面内） -->
+      <div class="border-b border-slate-200 bg-white">
+        <button type="button" id="btn-toggle-log-drawer" class="w-full px-4 sm:px-6 py-2.5 flex items-center justify-between text-xs font-bold text-slate-500 hover:bg-slate-50 transition">
+          <span class="flex items-center gap-1.5">
+            <span>📜 これまでの会話ログ</span>
+            <span id="log-count-badge" class="px-1.5 py-0.5 rounded-full bg-slate-100 text-slate-600 text-[10px]">0件</span>
+          </span>
+          <span id="log-chevron" class="text-[10px] transition-transform duration-200">▼</span>
+        </button>
+        <div id="log-drawer" class="hidden px-4 sm:px-6 pb-3.5">
+          <div id="log-list" class="max-h-52 overflow-y-auto custom-scroll space-y-2.5 p-3 rounded-2xl bg-slate-50 border border-slate-200/80 text-xs">
+            <p class="text-center text-slate-400 py-4">まだやり取りはありません。</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 下部：入力エリア（音声録音＋テキスト＋折りたたみヒント） -->
+      <div class="p-4 sm:p-5 bg-white">
+
+        <!-- 折りたたみ式：声かけ例・テスト用フレーズ -->
+        <div class="mb-3">
+          <button type="button" id="btn-toggle-hints" class="text-xs font-bold text-slate-500 hover:text-teal-700 flex items-center gap-1.5 py-1 transition">
+            <span>💡 声かけ例・テスト用フレーズ</span>
+            <span id="hint-chevron" class="text-[10px] transition-transform duration-200">▼</span>
+          </button>
+          <div id="hint-drawer" class="hidden mt-2 p-2.5 rounded-2xl bg-cream-50 border border-cream-200 flex flex-wrap gap-1.5">
+            <button type="button" data-phrase="そんなに外に出たいくらい、何かすごく気になっていることがあるんですね。よかったら聴かせてもらえますか？" class="hint-chip text-xs px-3 py-1.5 rounded-full bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 font-bold transition">
+              💚 【共感】気になっていることを聴く
+            </button>
+            <button type="button" data-phrase="今すぐ外は難しいけれど、静かな場所で5分だけお話を聴くか、冷たいお茶を持ってくるか、どちらがいいですか？" class="hint-chip text-xs px-3 py-1.5 rounded-full bg-teal-50 hover:bg-teal-100 text-teal-800 border border-teal-200 font-bold transition">
+              ⚖️ 【選択肢】静かな場所 or お茶を提案
+            </button>
+            <button type="button" data-phrase="ルールなので無理です。大声を出さないで部屋に戻ってください。" class="hint-chip text-xs px-3 py-1.5 rounded-full bg-rose-50 hover:bg-rose-100 text-rose-800 border border-rose-200 font-bold transition">
+              💥 【NG・正論】ルールで押さえつける
+            </button>
+            <button type="button" data-phrase="とりあえず落ち着いたら後で考えておきますね。" class="hint-chip text-xs px-3 py-1.5 rounded-full bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 font-bold transition">
+              😅 【NG・曖昧】先送り・曖昧な返答
+            </button>
+          </div>
+        </div>
+
+        <!-- 録音中ステータスバー -->
+        <div id="recording-bar" class="hidden mb-3 px-3.5 py-2.5 rounded-2xl bg-rose-50 border border-rose-200 flex items-center justify-between gap-3">
+          <div class="flex items-center gap-3">
+            <div class="flex items-center gap-1 h-5" aria-hidden="true">
+              <span class="wave-bar"></span>
+              <span class="wave-bar"></span>
+              <span class="wave-bar"></span>
+              <span class="wave-bar"></span>
+              <span class="wave-bar"></span>
+            </div>
+            <div>
+              <div class="text-xs sm:text-sm font-extrabold text-rose-700 flex items-center gap-2">
+                <span>録音中...</span>
+                <span id="recording-timer" class="tabular-nums bg-rose-100 px-2 py-0.5 rounded-full text-xs">00:00</span>
+              </div>
+              <div class="text-[11px] text-rose-600">話し終わったら ⏹️ を押すと文字起こし＆送信します</div>
+            </div>
+          </div>
+          <button type="button" id="btn-cancel-rec" class="shrink-0 px-3 py-1.5 rounded-xl bg-white hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs font-bold transition">
+            キャンセル
+          </button>
+        </div>
+
+        <!-- 入力フォーム -->
+        <form id="chat-form" class="flex items-end gap-2">
+          <!-- マイク録音ボタン -->
+          <button type="button" id="btn-mic" class="press-btn shrink-0 w-12 h-12 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 flex items-center justify-center text-xl transition" title="マイクで録音して話しかける">
+            🎤
+          </button>
+
+          <!-- テキスト入力欄 -->
+          <div class="flex-1">
+            <textarea
+              id="player-input"
+              rows="2"
+              placeholder="佐藤さんへの声かけを入力（Enterで送信／🎤で音声入力）..."
+              class="w-full rounded-2xl border-2 border-slate-200 focus:border-teal-500 focus:ring-2 focus:ring-teal-100 outline-none px-3.5 py-2.5 text-sm sm:text-base resize-none transition"
+            ></textarea>
+          </div>
+
+          <!-- 送信ボタン -->
+          <button type="submit" id="btn-send" class="press-btn shrink-0 h-12 px-5 rounded-2xl bg-teal-600 hover:bg-teal-700 disabled:opacity-45 disabled:cursor-not-allowed text-white font-extrabold text-sm sm:text-base shadow-md shadow-teal-600/20 flex items-center gap-1.5">
+            <span>送信</span>
+            <span aria-hidden="true">➤</span>
+          </button>
+        </form>
+
+        <!-- エラー＆リトライ案内ボックス（alert不使用） -->
+        <div id="notice-box" class="hidden mt-3 px-3.5 py-2.5 rounded-2xl bg-rose-50 border border-rose-200 text-xs text-rose-800 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <span id="notice-text" class="font-bold leading-relaxed"></span>
+          <button type="button" id="btn-retry-last" class="hidden shrink-0 px-3 py-1.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs transition">
+            🔄 もう一度送信する
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 3. 結果＆振り返りレポート画面 ==================== -->
+    <section id="screen-result" class="hidden p-6 sm:p-8 bg-gradient-to-b from-cream-50 via-white to-slate-50">
+      <div class="text-center mb-6">
+        <span id="result-status-pill" class="inline-block px-4 py-1 rounded-full text-xs sm:text-sm font-extrabold mb-2.5">
+          結果発表
+        </span>
+        <h2 id="result-headline" class="text-xl sm:text-3xl font-extrabold text-slate-800 mb-4">
+          ディエスカレーション成功！
+        </h2>
+
+        <!-- 称号カード -->
+        <div class="inline-flex flex-col sm:flex-row items-center gap-3 sm:gap-5 bg-white border-2 border-teal-200 rounded-3xl px-6 py-4 shadow-sm">
+          <div id="result-icon" class="text-4xl" aria-hidden="true">🏆</div>
+          <div class="text-center sm:text-left">
+            <div class="text-[11px] font-bold text-slate-400">獲得した称号</div>
+            <div id="result-title" class="text-lg sm:text-xl font-extrabold text-slate-800">ディエスカレーションの達人</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 最終スコアサマリー -->
+      <div class="grid grid-cols-3 gap-2.5 sm:gap-4 mb-6">
+        <div class="bg-white border border-rose-200/80 rounded-2xl p-3 text-center shadow-sm">
+          <div class="text-[11px] font-bold text-rose-600">最終 興奮度</div>
+          <div id="result-excitement" class="text-xl sm:text-2xl font-extrabold text-rose-700 tabular-nums mt-0.5">20</div>
+        </div>
+        <div class="bg-white border border-emerald-200/80 rounded-2xl p-3 text-center shadow-sm">
+          <div class="text-[11px] font-bold text-emerald-600">最終 安心・信頼度</div>
+          <div id="result-trust" class="text-xl sm:text-2xl font-extrabold text-emerald-700 tabular-nums mt-0.5">85</div>
+        </div>
+        <div class="bg-white border border-slate-200 rounded-2xl p-3 text-center shadow-sm">
+          <div class="text-[11px] font-bold text-slate-500">対話ターン数</div>
+          <div id="result-turns" class="text-xl sm:text-2xl font-extrabold text-slate-700 tabular-nums mt-0.5">4ターン</div>
+        </div>
+      </div>
+
+      <!-- CVPPPスキルタグ集計（Good / 注意） -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
+        <div class="bg-emerald-50/70 border border-emerald-200 rounded-2xl p-4">
+          <div class="text-xs font-extrabold text-emerald-800 mb-2">✨ できたこと（Goodタグ）</div>
+          <div id="result-good-tags" class="flex flex-wrap gap-1.5"></div>
+        </div>
+        <div class="bg-rose-50/70 border border-rose-200 rounded-2xl p-4">
+          <div class="text-xs font-extrabold text-rose-800 mb-2">⚠️ 気をつけたい点（注意タグ）</div>
+          <div id="result-bad-tags" class="flex flex-wrap gap-1.5"></div>
+        </div>
+      </div>
+
+      <!-- Geminiによる会話全体振り返りレポート -->
+      <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm mb-6">
+        <div class="flex items-center justify-between gap-2 mb-3">
+          <div class="flex items-center gap-2 font-extrabold text-slate-800 text-sm sm:text-base">
+            <span>👩‍⚕️</span>
+            <span>マキ先輩のCVPPP振り返りレポート</span>
+          </div>
+          <button id="btn-retry-report" class="hidden px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold">
+            🔄 再生成
+          </button>
+        </div>
+
+        <div id="report-loading" class="py-6 text-center text-xs sm:text-sm font-bold text-teal-700 flex items-center justify-center gap-2">
+          <span>会話全体を分析してレポートを作成中</span>
+          <span class="inline-flex gap-1">
+            <span class="loading-dot w-1.5 h-1.5 rounded-full bg-teal-600"></span>
+            <span class="loading-dot w-1.5 h-1.5 rounded-full bg-teal-600"></span>
+            <span class="loading-dot w-1.5 h-1.5 rounded-full bg-teal-600"></span>
+          </span>
+        </div>
+
+        <div id="report-body" class="hidden space-y-3 text-xs sm:text-sm leading-relaxed">
+          <div class="bg-emerald-50/70 border border-emerald-200/80 rounded-xl p-3.5">
+            <div class="font-extrabold text-emerald-900 mb-1">🌟 一番良かった声かけ</div>
+            <p id="report-best-line" class="text-slate-700"></p>
+          </div>
+          <div class="bg-amber-50/70 border border-amber-200/80 rounded-xl p-3.5">
+            <div class="font-extrabold text-amber-900 mb-1">💡 ここを変えるとさらに良くなる改善例</div>
+            <p id="report-improvement" class="text-slate-700"></p>
+          </div>
+          <div class="bg-slate-50 border border-slate-200 rounded-xl p-3.5">
+            <div class="font-extrabold text-slate-800 mb-1">📝 マキ先輩の総評</div>
+            <p id="report-summary" class="text-slate-700"></p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 結果画面のアクション -->
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-3">
+        <button id="btn-toggle-result-log" class="press-btn w-full sm:w-auto px-6 py-3.5 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-extrabold text-sm sm:text-base">
+          📜 会話ログを確認する
+        </button>
+        <button id="btn-restart" class="press-btn w-full sm:w-auto px-9 py-3.5 rounded-2xl bg-teal-600 hover:bg-teal-700 text-white font-extrabold text-sm sm:text-base shadow-lg shadow-teal-600/20">
+          🔄 もう一度挑戦する
+        </button>
+      </div>
+
+      <!-- 結果画面内の折りたたみログ -->
+      <div id="result-log-panel" class="hidden mt-5 p-4 rounded-2xl bg-white border border-slate-200 max-h-64 overflow-y-auto custom-scroll space-y-2.5 text-xs"></div>
+    </section>
+
+  </main>
+
+  <footer class="mt-3 text-center text-[11px] text-slate-400 px-4">
+    CVPPP（包括的暴力防止プログラム）の言語的ディエスカレーションを学ぶための対話シミュレーション
+  </footer>
+
+  <script>
+    // =========================================================================
+    // 1. Gemini API 設定（gemini-2.5-flash + 指数バックオフ）
+    // =========================================================================
+    const apiKey = ""; // ランタイムで自動注入されるため空文字のまま
+    const GEMINI_MODEL = "gemini-2.5-flash";
+
+    async function callGeminiAPI(payload, maxRetries = 4) {
+      const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${apiKey}`;
+      let delay = 1000;
+
+      for (let attempt = 0; attempt <= maxRetries; attempt++) {
+        try {
+          const res = await fetch(apiUrl, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+          });
+
+          if (!res.ok) {
+            if ((res.status === 429 || res.status >= 500) && attempt < maxRetries) {
+              await new Promise(r => setTimeout(r, delay));
+              delay *= 2;
+              continue;
+            }
+            throw new Error(`HTTP ${res.status}`);
+          }
+
+          const data = await res.json();
+          const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+          if (!text) throw new Error("Empty model response");
+          return text;
+        } catch (err) {
+          if (attempt < maxRetries) {
+            await new Promise(r => setTimeout(r, delay));
+            delay *= 2;
+          } else {
+            throw err;
+          }
+        }
+      }
+    }
+
+    // =========================================================================
+    // 2. サウンドエフェクト (Tone.js)
+    // =========================================================================
+    let soundEnabled = true;
+    let synth = null;
+
+    function playSFX(type) {
+      if (!soundEnabled || typeof Tone === "undefined") return;
+      try {
+        if (!synth) {
+          synth = new Tone.PolySynth(Tone.Synth).toDestination();
+          synth.volume.value = -12;
+        }
+        if (Tone.context.state !== "running") Tone.start();
+        const now = Tone.now();
+        if (type === "click") {
+          synth.triggerAttackRelease("C5", "32n", now);
+        } else if (type === "good") {
+          synth.triggerAttackRelease(["C5", "E5", "G5"], "16n", now);
+        } else if (type === "bad") {
+          synth.triggerAttackRelease(["Eb3", "D3"], "8n", now);
+        } else if (type === "win") {
+          synth.triggerAttackRelease("C5", "16n", now);
+          synth.triggerAttackRelease("E5", "16n", now + 0.1);
+          synth.triggerAttackRelease("G5", "16n", now + 0.2);
+          synth.triggerAttackRelease("C6", "4n", now + 0.3);
+        } else if (type === "escalate") {
+          synth.triggerAttackRelease("E3", "8n", now);
+          synth.triggerAttackRelease("Eb3", "8n", now + 0.18);
+          synth.triggerAttackRelease("D3", "4n", now + 0.36);
+        }
+      } catch (_) {}
+    }
+
+    // =========================================================================
+    // 3. 佐藤さん 6段階表情SVGアバター
+    //    "furious" | "angry" | "guarded" | "confused" | "calming" | "relieved"
+    // =========================================================================
+    const EMOTION_META = {
+      furious:  { label: "激怒・危険", pill: "bg-rose-600 text-white",      frame: "border-rose-500",    stage: "from-rose-100/80 via-white to-rose-50/40" },
+      angry:    { label: "イライラ",   pill: "bg-orange-100 text-orange-800", frame: "border-orange-300", stage: "from-orange-50/70 via-white to-slate-50/60" },
+      guarded:  { label: "警戒",       pill: "bg-amber-100 text-amber-800",  frame: "border-amber-300",  stage: "from-amber-50/60 via-white to-slate-50/60" },
+      confused: { label: "戸惑い",     pill: "bg-indigo-100 text-indigo-800", frame: "border-indigo-300", stage: "from-indigo-50/50 via-white to-slate-50/60" },
+      calming:  { label: "落ち着き",   pill: "bg-teal-100 text-teal-800",    frame: "border-teal-300",   stage: "from-teal-50/60 via-white to-slate-50/60" },
+      relieved: { label: "安心",       pill: "bg-emerald-100 text-emerald-800", frame: "border-emerald-400", stage: "from-emerald-50/70 via-white to-teal-50/50" }
+    };
+
+    function getPatientSVG(emotion = "angry") {
+      const faceColor = emotion === "furious" ? "#FCA5A5" : (emotion === "angry" ? "#FED7AA" : "#FDE6D2");
+      let brows = "", eyes = "", mouth = "", fx = "";
+
+      switch (emotion) {
+        case "furious":
+          brows = `<path d="M35 51 L54 61" stroke="#334155" stroke-width="4.8" stroke-linecap="round"/>
+                   <path d="M85 51 L66 61" stroke="#334155" stroke-width="4.8" stroke-linecap="round"/>`;
+          eyes = `<circle cx="46" cy="65" r="4.6" fill="#0F172A"/>
+                  <circle cx="74" cy="65" r="4.6" fill="#0F172A"/>
+                  <circle cx="47" cy="64" r="1.2" fill="#FFF"/>
+                  <circle cx="75" cy="64" r="1.2" fill="#FFF"/>`;
+          mouth = `<path d="M45 88 Q60 74 75 88 Q60 95 45 88 Z" fill="#991B1B" stroke="#334155" stroke-width="2.4"/>`;
+          fx = `<g stroke="#DC2626" stroke-width="3" fill="none" stroke-linecap="round">
+                  <path d="M86 30 Q92 34 88 40"/>
+                  <path d="M98 32 Q92 36 96 42"/>
+                  <path d="M85 43 Q91 38 97 44"/>
+                </g>`;
+          break;
+
+        case "angry":
+          brows = `<path d="M37 54 L54 60" stroke="#334155" stroke-width="4.2" stroke-linecap="round"/>
+                   <path d="M83 54 L66 60" stroke="#334155" stroke-width="4.2" stroke-linecap="round"/>`;
+          eyes = `<ellipse cx="46" cy="66" rx="4.2" ry="3.4" fill="#1E293B"/>
+                  <ellipse cx="74" cy="66" rx="4.2" ry="3.4" fill="#1E293B"/>`;
+          mouth = `<path d="M47 86 Q60 79 73 86" fill="none" stroke="#334155" stroke-width="3.6" stroke-linecap="round"/>`;
+          fx = `<path d="M92 48 Q97 56 92 61 Q87 56 92 48 Z" fill="#38BDF8" opacity="0.85"/>`;
+          break;
+
+        case "guarded":
+          brows = `<path d="M37 56 L54 57" stroke="#334155" stroke-width="3.6" stroke-linecap="round"/>
+                   <path d="M66 57 L83 55" stroke="#334155" stroke-width="3.6" stroke-linecap="round"/>`;
+          eyes = `<rect x="40" y="64" width="12" height="4" rx="2" fill="#1E293B"/>
+                  <rect x="68" y="64" width="12" height="4" rx="2" fill="#1E293B"/>`;
+          mouth = `<path d="M50 85 L70 84" fill="none" stroke="#334155" stroke-width="3.2" stroke-linecap="round"/>`;
+          fx = `<path d="M22 44 L28 38 M20 52 L27 50" stroke="#D97706" stroke-width="2.4" stroke-linecap="round"/>`;
+          break;
+
+        case "confused":
+          brows = `<path d="M38 58 Q46 52 54 55" fill="none" stroke="#334155" stroke-width="3.4" stroke-linecap="round"/>
+                   <path d="M66 55 Q74 52 82 58" fill="none" stroke="#334155" stroke-width="3.4" stroke-linecap="round"/>`;
+          eyes = `<circle cx="46" cy="66" r="4.2" fill="#1E293B"/>
+                  <circle cx="74" cy="66" r="4.2" fill="#1E293B"/>
+                  <circle cx="47.5" cy="64.5" r="1.4" fill="#FFF"/>
+                  <circle cx="75.5" cy="64.5" r="1.4" fill="#FFF"/>`;
+          mouth = `<ellipse cx="60" cy="85" rx="5.5" ry="3.5" fill="none" stroke="#334155" stroke-width="3"/>`;
+          fx = `<text x="88" y="45" font-size="18" font-weight="800" fill="#6366F1">?</text>`;
+          break;
+
+        case "calming":
+          brows = `<path d="M38 56 Q46 53 54 56" fill="none" stroke="#334155" stroke-width="3" stroke-linecap="round"/>
+                   <path d="M66 56 Q74 53 82 56" fill="none" stroke="#334155" stroke-width="3" stroke-linecap="round"/>`;
+          eyes = `<circle cx="46" cy="66" r="3.9" fill="#1E293B"/>
+                  <circle cx="74" cy="66" r="3.9" fill="#1E293B"/>
+                  <circle cx="47.3" cy="64.6" r="1.3" fill="#FFF"/>
+                  <circle cx="75.3" cy="64.6" r="1.3" fill="#FFF"/>`;
+          mouth = `<path d="M50 84 Q60 89 70 84" fill="none" stroke="#334155" stroke-width="3" stroke-linecap="round"/>`;
+          fx = `<path d="M90 54 Q95 50 93 44" fill="none" stroke="#14B8A6" stroke-width="2.2" stroke-linecap="round" opacity="0.7"/>`;
+          break;
+
+        case "relieved":
+          brows = `<path d="M38 54 Q46 50 54 54" fill="none" stroke="#334155" stroke-width="3" stroke-linecap="round"/>
+                   <path d="M66 54 Q74 50 82 54" fill="none" stroke="#334155" stroke-width="3" stroke-linecap="round"/>`;
+          eyes = `<path d="M40 67 Q46 61 52 67" fill="none" stroke="#1E293B" stroke-width="3.4" stroke-linecap="round"/>
+                  <path d="M68 67 Q74 61 80 67" fill="none" stroke="#1E293B" stroke-width="3.4" stroke-linecap="round"/>`;
+          mouth = `<path d="M48 82 Q60 93 72 82" fill="none" stroke="#334155" stroke-width="3.4" stroke-linecap="round"/>`;
+          fx = `<circle cx="36" cy="76" r="5" fill="#FDA4AF" opacity="0.5"/>
+                <circle cx="84" cy="76" r="5" fill="#FDA4AF" opacity="0.5"/>
+                <text x="86" y="38" font-size="15">✨</text>
+                <text x="16" y="42" font-size="14">💚</text>`;
+          break;
+      }
+
+      const anim = emotion === "furious" ? "animate-tremble" : "animate-breathe";
+
+      return `
+        <svg viewBox="0 0 120 120" class="w-full h-full ${anim}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="佐藤さんの表情">
+          <!-- 肩・カーディガン -->
+          <path d="M22 120 C24 96, 40 92, 60 92 C80 92, 96 96, 98 120 Z" fill="#475569"/>
+          <path d="M48 93 L60 112 L72 93 Z" fill="#E2E8F0"/>
+          <!-- 首 -->
+          <rect x="52" y="84" width="16" height="14" rx="6" fill="${faceColor}"/>
+          <!-- 耳 -->
+          <circle cx="28" cy="68" r="7" fill="${faceColor}" stroke="#D6B49C" stroke-width="1.4"/>
+          <circle cx="92" cy="68" r="7" fill="${faceColor}" stroke="#D6B49C" stroke-width="1.4"/>
+          <!-- 輪郭 -->
+          <rect x="30" y="34" width="60" height="62" rx="26" fill="${faceColor}" stroke="#D6B49C" stroke-width="1.4"/>
+          <!-- 短髪 -->
+          <path d="M28 58 C26 34, 42 22, 60 22 C78 22, 94 34, 92 58 C88 46, 80 42, 60 42 C40 42, 32 46, 28 58 Z" fill="#334155"/>
+          <path d="M36 42 Q48 34 60 40 Q72 34 84 42" fill="none" stroke="#1E293B" stroke-width="2" opacity="0.45"/>
+          <!-- 無精ひげ -->
+          <path d="M44 91 Q60 95 76 91" fill="none" stroke="#94A3B8" stroke-width="2" stroke-dasharray="2 3" opacity="0.45"/>
+          ${brows}
+          ${eyes}
+          ${mouth}
+          ${fx}
+        </svg>
+      `;
+    }
+
+    // =========================================================================
+    // 4. ゲーム状態 & DOM参照
+    // =========================================================================
+    const MAX_TURNS = 6;
+    const INITIAL_SPEECH = "「もう限界だ！今すぐ外に出してくれ！なんで俺だけ閉じ込められなきゃいけないんだ！」";
+    const INITIAL_THOUGHT = "（家のことが心配でたまらないのに…どうせここじゃ誰も俺の話をちゃんと聴いてくれないんだろ…）";
+    const INITIAL_SENPAI = "佐藤さん、かなり切羽詰まってるね！いきなりルールで押さえつけず、まずは「何がそんなに気になっているのか」に寄り添う声かけから入ってみよう。";
+
+    const state = {
+      excitement: 70,
+      trust: 20,
+      turnsUsed: 0,
+      emotion: "angry",
+      isLoading: false,
+      gameEnded: false,
+      endReason: null, // "resolved" | "escalated" | "timeout" | "manual"
+      allTags: [],     // { label, type }
+      history: [],     // { role: "player"|"patient", text, isVoice?, voiceTone?, thought?, tags?, senpai?, excitementDelta?, trustDelta? }
+      lastFailedInput: null
+    };
+
+    const el = {
+      body: document.getElementById("app-body"),
+      container: document.getElementById("game-container"),
+      screenTitle: document.getElementById("screen-title"),
+      screenPlay: document.getElementById("screen-play"),
+      screenResult: document.getElementById("screen-result"),
+      titleAvatar: document.getElementById("title-avatar"),
+      btnStart: document.getElementById("btn-start"),
+      turnBadge: document.getElementById("turn-badge"),
+      btnReviewNow: document.getElementById("btn-review-now"),
+      btnToggleSound: document.getElementById("btn-toggle-sound"),
+      excitementValue: document.getElementById("excitement-value"),
+      excitementBar: document.getElementById("excitement-bar"),
+      excitementDeltaSlot: document.getElementById("excitement-delta-slot"),
+      trustValue: document.getElementById("trust-value"),
+      trustBar: document.getElementById("trust-bar"),
+      trustDeltaSlot: document.getElementById("trust-delta-slot"),
+      stageArea: document.getElementById("stage-area"),
+      particleLayer: document.getElementById("particle-layer"),
+      avatarFrame: document.getElementById("avatar-frame"),
+      emotionBadge: document.getElementById("emotion-badge"),
+      thinkingBadge: document.getElementById("thinking-badge"),
+      thinkingText: document.getElementById("thinking-text"),
+      patientSpeech: document.getElementById("patient-speech"),
+      patientThought: document.getElementById("patient-thought"),
+      lastPlayerCard: document.getElementById("last-player-card"),
+      lastPlayerLabel: document.getElementById("last-player-label"),
+      voiceTonePill: document.getElementById("voice-tone-pill"),
+      lastPlayerText: document.getElementById("last-player-text"),
+      turnTags: document.getElementById("turn-tags"),
+      senpaiComment: document.getElementById("senpai-comment"),
+      btnToggleLogDrawer: document.getElementById("btn-toggle-log-drawer"),
+      logCountBadge: document.getElementById("log-count-badge"),
+      logChevron: document.getElementById("log-chevron"),
+      logDrawer: document.getElementById("log-drawer"),
+      logList: document.getElementById("log-list"),
+      btnToggleHints: document.getElementById("btn-toggle-hints"),
+      hintChevron: document.getElementById("hint-chevron"),
+      hintDrawer: document.getElementById("hint-drawer"),
+      hintChips: document.querySelectorAll(".hint-chip"),
+      recordingBar: document.getElementById("recording-bar"),
+      recordingTimer: document.getElementById("recording-timer"),
+      btnCancelRec: document.getElementById("btn-cancel-rec"),
+      chatForm: document.getElementById("chat-form"),
+      btnMic: document.getElementById("btn-mic"),
+      playerInput: document.getElementById("player-input"),
+      btnSend: document.getElementById("btn-send"),
+      noticeBox: document.getElementById("notice-box"),
+      noticeText: document.getElementById("notice-text"),
+      btnRetryLast: document.getElementById("btn-retry-last"),
+      resultStatusPill: document.getElementById("result-status-pill"),
+      resultHeadline: document.getElementById("result-headline"),
+      resultIcon: document.getElementById("result-icon"),
+      resultTitle: document.getElementById("result-title"),
+      resultExcitement: document.getElementById("result-excitement"),
+      resultTrust: document.getElementById("result-trust"),
+      resultTurns: document.getElementById("result-turns"),
+      resultGoodTags: document.getElementById("result-good-tags"),
+      resultBadTags: document.getElementById("result-bad-tags"),
+      btnRetryReport: document.getElementById("btn-retry-report"),
+      reportLoading: document.getElementById("report-loading"),
+      reportBody: document.getElementById("report-body"),
+      reportBestLine: document.getElementById("report-best-line"),
+      reportImprovement: document.getElementById("report-improvement"),
+      reportSummary: document.getElementById("report-summary"),
+      btnToggleResultLog: document.getElementById("btn-toggle-result-log"),
+      resultLogPanel: document.getElementById("result-log-panel"),
+      btnRestart: document.getElementById("btn-restart")
+    };
+
+    // 初期描画
+    el.titleAvatar.innerHTML = getPatientSVG("angry");
+
+    // =========================================================================
+    // 5. UIヘルパー＆演出
+    // =========================================================================
+    function showScreen(name) {
+      el.screenTitle.classList.add("hidden");
+      el.screenPlay.classList.add("hidden");
+      el.screenResult.classList.add("hidden");
+      if (name === "title") el.screenTitle.classList.remove("hidden");
+      if (name === "play") el.screenPlay.classList.remove("hidden");
+      if (name === "result") el.screenResult.classList.remove("hidden");
+    }
+
+    function clamp(val, min, max) {
+      return Math.max(min, Math.min(max, val));
+    }
+
+    function escapeHtml(str) {
+      return String(str || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    function showNotice(message, allowRetry = false) {
+      el.noticeText.textContent = message;
+      el.noticeBox.classList.remove("hidden");
+      if (allowRetry && state.lastFailedInput) {
+        el.btnRetryLast.classList.remove("hidden");
+      } else {
+        el.btnRetryLast.classList.add("hidden");
+      }
+    }
+
+    function hideNotice() {
+      el.noticeBox.classList.add("hidden");
+      el.btnRetryLast.classList.add("hidden");
+    }
+
+    function triggerShake() {
+      el.container.classList.remove("animate-shake");
+      void el.container.offsetWidth;
+      el.container.classList.add("animate-shake");
+    }
+
+    function spawnParticles(symbols, count = 6) {
+      for (let i = 0; i < count; i++) {
+        const span = document.createElement("span");
+        span.textContent = symbols[i % symbols.length];
+        span.className = "particle-rise absolute text-xl sm:text-2xl select-none";
+        span.style.left = `${16 + Math.random() * 68}%`;
+        span.style.top = `${28 + Math.random() * 44}%`;
+        span.style.animationDelay = `${i * 0.08}s`;
+        el.particleLayer.appendChild(span);
+        setTimeout(() => span.remove(), 1400);
+      }
+    }
+
+    function showDeltaBadge(container, delta, isExcitement) {
+      if (!delta) return;
+      const badge = document.createElement("span");
+      const sign = delta > 0 ? "+" : "";
+      const isPositiveOutcome = isExcitement ? delta < 0 : delta > 0;
+      badge.className = `delta-badge inline-block px-2 py-0.5 rounded-full text-xs font-extrabold shadow ${
+        isPositiveOutcome ? "bg-emerald-500 text-white" : "bg-rose-500 text-white"
+      }`;
+      badge.textContent = `${sign}${delta}`;
+      container.innerHTML = "";
+      container.appendChild(badge);
+      setTimeout(() => badge.remove(), 1500);
+    }
+
+    function updatePlayUI(excitementDelta = 0, trustDelta = 0) {
+      el.excitementValue.textContent = state.excitement;
+      el.excitementBar.style.width = `${state.excitement}%`;
+      el.trustValue.textContent = state.trust;
+      el.trustBar.style.width = `${state.trust}%`;
+      el.turnBadge.textContent = `ターン ${state.turnsUsed} / ${MAX_TURNS}`;
+      el.btnReviewNow.disabled = state.turnsUsed === 0 || state.isLoading;
+
+      if (excitementDelta !== 0) showDeltaBadge(el.excitementDeltaSlot, excitementDelta, true);
+      if (trustDelta !== 0) showDeltaBadge(el.trustDeltaSlot, trustDelta, false);
+
+      const meta = EMOTION_META[state.emotion] || EMOTION_META.angry;
+      el.avatarFrame.innerHTML = getPatientSVG(state.emotion);
+      el.avatarFrame.className = `w-36 h-36 sm:w-40 sm:h-40 rounded-3xl bg-white border-4 ${meta.frame} shadow-md flex items-center justify-center overflow-hidden transition-colors duration-300`;
+      el.emotionBadge.textContent = `状態：${meta.label}`;
+      el.emotionBadge.className = `mt-2 px-3 py-0.5 rounded-full text-xs font-extrabold shadow-sm ${meta.pill}`;
+      el.stageArea.className = `relative bg-gradient-to-b ${meta.stage} px-4 pt-5 pb-4 sm:px-6 border-b border-slate-200 transition-colors duration-500`;
+
+      if (state.excitement >= 85) {
+        el.body.style.backgroundColor = "#FFF1F2";
+      } else if (state.excitement <= 30) {
+        el.body.style.backgroundColor = "#ECFDF5";
+      } else {
+        el.body.style.backgroundColor = "#F6F4EE";
+      }
+    }
+
+    function renderLogInto(containerEl) {
+      containerEl.innerHTML = "";
+      if (state.history.length === 0) {
+        containerEl.innerHTML = `<p class="text-center text-slate-400 py-4">まだやり取りはありません。</p>`;
+        return;
+      }
+
+      state.history.forEach(item => {
+        const wrap = document.createElement("div");
+        if (item.role === "player") {
+          wrap.className = "flex justify-end";
+          wrap.innerHTML = `
+            <div class="max-w-[88%] bg-teal-600 text-white rounded-2xl rounded-tr-sm px-3.5 py-2 shadow-sm">
+              <div class="text-[10px] text-teal-100 font-bold mb-0.5 flex items-center gap-1.5">
+                <span>${item.isVoice ? "🎤 あなた（音声）" : "💬 あなた（スタッフ）"}</span>
+                ${item.voiceTone ? `<span class="px-1.5 py-0.5 rounded bg-teal-700/80 text-[10px]">${escapeHtml(item.voiceTone)}</span>` : ""}
+              </div>
+              <div class="leading-relaxed">${escapeHtml(item.text)}</div>
+            </div>`;
+        } else {
+          wrap.className = "flex flex-col items-start";
+          const tagsHtml = (item.tags || []).map(t => {
+            const cls = t.type === "good"
+              ? "bg-emerald-100 text-emerald-800"
+              : "bg-rose-100 text-rose-800";
+            return `<span class="px-1.5 py-0.5 rounded text-[10px] font-bold ${cls}">${escapeHtml(t.label)}</span>`;
+          }).join("");
+
+          wrap.innerHTML = `
+            <div class="max-w-[92%] bg-white border border-slate-200 rounded-2xl rounded-tl-sm px-3.5 py-2.5 shadow-sm">
+              <div class="flex flex-wrap items-center gap-1.5 mb-1">
+                <span class="text-[10px] font-extrabold text-slate-500">佐藤さん</span>
+                ${tagsHtml}
+              </div>
+              <div class="font-bold text-slate-800 leading-relaxed">${escapeHtml(item.text)}</div>
+              ${item.thought ? `<div class="text-[11px] text-amber-800 italic mt-1">💭 ${escapeHtml(item.thought)}</div>` : ""}
+              ${item.senpai ? `<div class="text-[11px] text-teal-800 mt-1.5 pt-1.5 border-t border-slate-100">👩‍⚕️ ${escapeHtml(item.senpai)}</div>` : ""}
+            </div>`;
+        }
+        containerEl.appendChild(wrap);
+      });
+      containerEl.scrollTop = containerEl.scrollHeight;
+    }
+
+    function syncLogs() {
+      const turnPairs = Math.floor(state.history.length / 2);
+      el.logCountBadge.textContent = `${turnPairs}ターン分`;
+      renderLogInto(el.logList);
+    }
+
+    // =========================================================================
+    // 6. 対話パート：Gemini 2.5 Flash 構造化JSON呼び出し
+    // =========================================================================
+    function buildDialogueSystemPrompt() {
+      return `
+あなたは精神科コミュニケーション（CVPPP：包括的暴力防止プログラム）の「言語的ディエスカレーション」学習アプリのゲームマスター兼、患者「佐藤 健一さん」兼、CVPPPトレーナー「マキ先輩」です。
+
+【厳守する表記ルール】
+- 医療機関の現場に即し、「患者様」という表現は一切使わず、「患者」「患者さん」または「佐藤さん」を使用すること。
+
+【患者：佐藤 健一さん（40代男性・入院中）】
+- 現在の状況：病棟のデイルームで「もう限界だ！今すぐ外に出してくれ！なんで俺だけ閉じ込められなきゃいけないんだ！」と強い口調で訴えている。
+- 隠れた背景・本音：「家族（妻や子ども）のことが心配でたまらない」「ちゃんと自分の話を聴いてもらえない孤独感・無力感」がある。
+- 反応のリアルさ：
+  ・頭ごなしの否定、ルール一点張りの正論、命令口調、曖昧な先送りには強く反発し興奮度が上がる。
+  ・感情への共感・受容、簡潔で誠実な伝達、自己決定感を残す具体的な選択肢の提示（「静かな場所で5分聴く」「お茶を飲む」「主治医や家族への連絡方法を確認する」など）を受けると、少しずつ本音（家族の心配など）を語り始め、落ち着いていく。
+
+【CVPPPトレーナー：マキ先輩】
+- 鋭くて少しユーモラスなツッコミと、CVPPPの原則に基づく具体的な解説を1〜2文で行う。
+
+【音声入力がある場合の重要ルール】
+- 添付音声がある場合は、まずプレイヤーが話した日本語を正確に文字起こしして "transcript" に入れること。無音・ノイズのみで聞き取れない場合は "" にする。
+- 音声入力時は、声のトーン・速さ・落ち着き具合・優しさなどを聴き取って "voice_tone_note" に短い評価を入れること（例：「落ち着いたトーンでGood」「少し早口で焦りが伝わったかも」）。
+- テキスト入力時は "transcript" にプレイヤーの入力文をそのまま入れ、"voice_tone_note" は空文字 "" にすること。
+
+【パラメータ変動の目安】
+- 良いディエスカレーション：excitement_delta は -10〜-30、trust_delta は +10〜+30
+- 悪い対応（正論で対立・命令・威圧・曖昧な先送り・情報過多）：excitement_delta は +10〜+30、trust_delta は -5〜-25
+- 普通・様子見：-5〜+5 程度
+- 十分に落ち着いて対話がまとまった場合のみ is_resolved を true にする。
+
+必ず指定のJSONスキーマのみを出力してください。
+`;
+    }
+
+    async function submitTurn(input) {
+      if (state.isLoading || state.gameEnded) return;
+
+      if (input.mode === "text") {
+        const trimmed = (input.text || "").trim();
+        if (!trimmed) {
+          showNotice("佐藤さんへの声かけを入力するか、🎤ボタンで音声録音してください。");
+          return;
+        }
+        input.text = trimmed;
+      }
+
+      state.isLoading = true;
+      state.lastFailedInput = input;
+      hideNotice();
+      el.btnSend.disabled = true;
+      el.btnMic.disabled = true;
+      el.playerInput.disabled = true;
+      el.btnReviewNow.disabled = true;
+      el.thinkingText.textContent = input.mode === "audio"
+        ? "音声を聞き取って佐藤さんが反応しています"
+        : "佐藤さんが反応を考えています";
+      el.thinkingBadge.classList.remove("hidden");
+
+      const historyText = state.history.length === 0
+        ? `佐藤さん: ${INITIAL_SPEECH}`
+        : `佐藤さん(初期): ${INITIAL_SPEECH}\n` + state.history.map(h =>
+            h.role === "player"
+              ? `スタッフ(プレイヤー): ${h.text}`
+              : `佐藤さん: ${h.text}`
+          ).join("\n");
+
+      const contextText = `
+現在の状態：
+- 興奮度: ${state.excitement} / 100（100でエスカレート終了、25以下で沈静化圏内）
+- 安心・信頼度: ${state.trust} / 100（80以上で沈静化成功）
+- 次のターン: ${state.turnsUsed + 1} / ${MAX_TURNS}
+
+これまでの対話履歴：
+${historyText}
+`;
+
+      const userParts = [];
+      if (input.mode === "audio") {
+        userParts.push({
+          text: `${contextText}\n添付した音声はスタッフ(プレイヤー)が佐藤さんに話しかけた声です。正確に文字起こしして "transcript" に入れ、声のトーン評価を "voice_tone_note" に入れ、佐藤さんの返答・心の声・表情・ゲージ増減・CVPPPタグ・マキ先輩の解説を生成してください。`
+        });
+        userParts.push({
+          inlineData: {
+            mimeType: input.mimeType,
+            data: input.base64Audio
+          }
+        });
+      } else {
+        userParts.push({
+          text: `${contextText}\n今回のスタッフ(プレイヤー)の発言：「${input.text}」\nこの発言に対する佐藤さんの返答・心の声・表情・ゲージ増減・CVPPPタグ・マキ先輩の解説を生成してください。`
+        });
+      }
+
+      const payload = {
+        contents: [{ role: "user", parts: userParts }],
+        systemInstruction: { parts: [{ text: buildDialogueSystemPrompt() }] },
+        generationConfig: {
+          responseMimeType: "application/json",
+          responseSchema: {
+            type: "OBJECT",
+            properties: {
+              transcript: { type: "STRING" },
+              voice_tone_note: { type: "STRING" },
+              patient_reply: { type: "STRING" },
+              patient_inner_thought: { type: "STRING" },
+              patient_emotion: {
+                type: "STRING",
+                enum: ["furious", "angry", "guarded", "confused", "calming", "relieved"]
+              },
+              excitement_delta: { type: "INTEGER" },
+              trust_delta: { type: "INTEGER" },
+              cvppp_tags: {
+                type: "ARRAY",
+                items: {
+                  type: "OBJECT",
+                  properties: {
+                    label: { type: "STRING" },
+                    type: { type: "STRING", enum: ["good", "bad"] }
+                  },
+                  required: ["label", "type"]
+                }
+              },
+              senpai_comment: { type: "STRING" },
+              is_resolved: { type: "BOOLEAN" }
+            },
+            required: [
+              "transcript",
+              "voice_tone_note",
+              "patient_reply",
+              "patient_inner_thought",
+              "patient_emotion",
+              "excitement_delta",
+              "trust_delta",
+              "cvppp_tags",
+              "senpai_comment",
+              "is_resolved"
+            ]
+          }
+        }
+      };
+
+      try {
+        const raw = await callGeminiAPI(payload);
+        const res = JSON.parse(raw);
+
+        const spokenText = input.mode === "audio"
+          ? (res.transcript || "").trim()
+          : input.text;
+
+        if (input.mode === "audio" && !spokenText) {
+          state.lastFailedInput = null;
+          showNotice("音声をうまく聞き取れませんでした。もう少しはっきり話すか、テキスト入力をお試しください。", false);
+          return;
+        }
+
+        state.lastFailedInput = null;
+        state.turnsUsed += 1;
+
+        const excitementDelta = clamp(parseInt(res.excitement_delta, 10) || 0, -30, 30);
+        const trustDelta = clamp(parseInt(res.trust_delta, 10) || 0, -25, 30);
+
+        state.excitement = clamp(state.excitement + excitementDelta, 0, 100);
+        state.trust = clamp(state.trust + trustDelta, 0, 100);
+        state.emotion = EMOTION_META[res.patient_emotion] ? res.patient_emotion : "angry";
+
+        const tags = Array.isArray(res.cvppp_tags) ? res.cvppp_tags.slice(0, 3) : [];
+        tags.forEach(t => state.allTags.push(t));
+
+        const voiceTone = input.mode === "audio" ? (res.voice_tone_note || "").trim() : "";
+
+        // 履歴に追加
+        state.history.push({
+          role: "player",
+          text: spokenText,
+          isVoice: input.mode === "audio",
+          voiceTone
+        });
+        state.history.push({
+          role: "patient",
+          text: res.patient_reply,
+          thought: res.patient_inner_thought,
+          tags,
+          senpai: res.senpai_comment,
+          excitementDelta,
+          trustDelta
+        });
+
+        // 直前のプレイヤー発言表示
+        el.lastPlayerLabel.textContent = input.mode === "audio"
+          ? "🎤 あなたの声かけ（音声認識結果）"
+          : "💬 あなたの声かけ";
+        el.lastPlayerText.textContent = `「${spokenText}」`;
+        if (voiceTone) {
+          el.voiceTonePill.textContent = `声のトーン：${voiceTone}`;
+          el.voiceTonePill.classList.remove("hidden");
+        } else {
+          el.voiceTonePill.classList.add("hidden");
+        }
+        el.lastPlayerCard.classList.remove("hidden");
+
+        // 佐藤さん＆マキ先輩のUI更新
+        el.patientSpeech.textContent = res.patient_reply;
+        el.patientThought.textContent = res.patient_inner_thought;
+        el.senpaiComment.textContent = res.senpai_comment;
+
+        el.turnTags.innerHTML = "";
+        tags.forEach(t => {
+          const span = document.createElement("span");
+          span.className = t.type === "good"
+            ? "px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200 text-[11px] font-bold"
+            : "px-2 py-0.5 rounded-full bg-rose-100 text-rose-800 border border-rose-200 text-[11px] font-bold";
+          span.textContent = `${t.type === "good" ? "✓ " : "⚠ "}${t.label}`;
+          el.turnTags.appendChild(span);
+        });
+
+        updatePlayUI(excitementDelta, trustDelta);
+        syncLogs();
+
+        // 演出＆効果音
+        if (excitementDelta >= 10) {
+          playSFX("bad");
+          triggerShake();
+          spawnParticles(["💢", "🔥", "⚡"], 6);
+        } else if (trustDelta >= 10 || excitementDelta <= -10) {
+          playSFX("good");
+          spawnParticles(["💚", "✨", "🫧"], 6);
+        } else {
+          playSFX("click");
+        }
+
+        if (input.mode === "text") {
+          el.playerInput.value = "";
+        }
+
+        // 決着判定
+        checkEndCondition(Boolean(res.is_resolved));
+
+      } catch (err) {
+        console.error(err);
+        showNotice("AIとの通信でエラーが発生しました。下のボタンからそのまま再送信できます。", true);
+      } finally {
+        state.isLoading = false;
+        el.thinkingBadge.classList.add("hidden");
+        if (!state.gameEnded) {
+          el.btnSend.disabled = false;
+          el.btnMic.disabled = false;
+          el.playerInput.disabled = false;
+          el.btnReviewNow.disabled = state.turnsUsed === 0;
+          if (input.mode === "text") el.playerInput.focus();
+        }
+      }
+    }
+
+    function checkEndCondition(isResolvedByModel) {
+      let reason = null;
+      if (state.excitement >= 100) {
+        reason = "escalated";
+      } else if (state.trust >= 80 || (state.excitement <= 25 && state.trust >= 65) || (isResolvedByModel && state.excitement <= 35 && state.trust >= 65)) {
+        reason = "resolved";
+      } else if (state.turnsUsed >= MAX_TURNS) {
+        reason = "timeout";
+      }
+
+      if (reason) {
+        state.gameEnded = true;
+        state.endReason = reason;
+        el.btnSend.disabled = true;
+        el.btnMic.disabled = true;
+        el.playerInput.disabled = true;
+        el.btnReviewNow.disabled = true;
+
+        setTimeout(() => {
+          openResultScreen();
+        }, 1500);
+      }
+    }
+
+    // =========================================================================
+    // 7. 結果＆振り返りレポート画面
+    // =========================================================================
+    function determineOutcomeMeta() {
+      if (state.endReason === "resolved") {
+        playSFX("win");
+        return {
+          pill: "🎉 沈静化（ディエスカレーション）成功！",
+          pillCls: "bg-emerald-100 text-emerald-800 border border-emerald-200",
+          headline: "佐藤さんの表情が和らぎ、落ち着いて話せる状態になりました！",
+          icon: "🏆",
+          fallbackTitle: state.turnsUsed <= 4 ? "ディエスカレーションの達人" : "優しき聴き手"
+        };
+      }
+      if (state.endReason === "escalated") {
+        playSFX("escalate");
+        return {
+          pill: "🚨 エスカレート発生（安全確保）",
+          pillCls: "bg-rose-100 text-rose-800 border border-rose-200",
+          headline: "興奮度が限界に達したため、距離をとり応援を要請しました",
+          icon: "🛡️",
+          fallbackTitle: "正論マシンガン（安全退避も大切！）"
+        };
+      }
+      if (state.endReason === "manual") {
+        playSFX("click");
+        return {
+          pill: "📋 途中振り返りレポート",
+          pillCls: "bg-teal-100 text-teal-800 border border-teal-200",
+          headline: `${state.turnsUsed}ターン目時点のコミュニケーションを振り返ります`,
+          icon: "🔍",
+          fallbackTitle: "探求心の強い実践者"
+        };
+      }
+      // timeout
+      if (state.excitement <= 45 && state.trust >= 55) {
+        playSFX("good");
+        return {
+          pill: "⏳ 6ターン終了（あと一歩！）",
+          pillCls: "bg-sky-100 text-sky-800 border border-sky-200",
+          headline: "かなり落ち着いてきましたが、完全な沈静化まであと一歩でした",
+          icon: "🌱",
+          fallbackTitle: "惜しい！あと一歩サポーター"
+        };
+      }
+      playSFX("bad");
+      return {
+        pill: "⏳ 6ターン終了（タイムアップ）",
+        pillCls: "bg-amber-100 text-amber-800 border border-amber-200",
+        headline: "なかなか緊張がほぐれませんでした。振り返りでコツを掴みましょう！",
+        icon: "💪",
+        fallbackTitle: "伸びしろ無限大チャレンジャー"
+      };
+    }
+
+    function renderTagSummary() {
+      const goodCounts = {};
+      const badCounts = {};
+      state.allTags.forEach(t => {
+        if (t.type === "good") goodCounts[t.label] = (goodCounts[t.label] || 0) + 1;
+        else badCounts[t.label] = (badCounts[t.label] || 0) + 1;
+      });
+
+      el.resultGoodTags.innerHTML = "";
+      const goodEntries = Object.entries(goodCounts);
+      if (goodEntries.length === 0) {
+        el.resultGoodTags.innerHTML = `<span class="text-xs text-slate-400">今回はまだGoodタグがありませんでした</span>`;
+      } else {
+        goodEntries.forEach(([label, count]) => {
+          const span = document.createElement("span");
+          span.className = "px-2.5 py-1 rounded-full bg-white text-emerald-800 border border-emerald-200 text-xs font-bold shadow-sm";
+          span.textContent = count > 1 ? `✓ ${label} ×${count}` : `✓ ${label}`;
+          el.resultGoodTags.appendChild(span);
+        });
+      }
+
+      el.resultBadTags.innerHTML = "";
+      const badEntries = Object.entries(badCounts);
+      if (badEntries.length === 0) {
+        el.resultBadTags.innerHTML = `<span class="text-xs text-emerald-700 font-bold">注意タグなし！とても丁寧な対応でした</span>`;
+      } else {
+        badEntries.forEach(([label, count]) => {
+          const span = document.createElement("span");
+          span.className = "px-2.5 py-1 rounded-full bg-white text-rose-800 border border-rose-200 text-xs font-bold shadow-sm";
+          span.textContent = count > 1 ? `⚠ ${label} ×${count}` : `⚠ ${label}`;
+          el.resultBadTags.appendChild(span);
+        });
+      }
+    }
+
+    async function generateFinalReport(fallbackTitle) {
+      el.reportLoading.classList.remove("hidden");
+      el.reportBody.classList.add("hidden");
+      el.btnRetryReport.classList.add("hidden");
+
+      const transcriptLog = state.history.map(h => {
+        if (h.role === "player") {
+          return `スタッフ: 「${h.text}」${h.voiceTone ? `（声のトーン:${h.voiceTone}）` : ""}`;
+        }
+        const tagStr = (h.tags || []).map(t => `${t.label}(${t.type})`).join(", ");
+        return `佐藤さん: ${h.text} [タグ:${tagStr}]`;
+      }).join("\n");
+
+      const prompt = `
+以下は精神科の患者（佐藤 健一さん）へのCVPPP言語的ディエスカレーション対話の履歴です。
+結果：${state.endReason}（最終興奮度 ${state.excitement} / 100、安心・信頼度 ${state.trust} / 100、経過 ${state.turnsUsed}ターン）
+
+${transcriptLog}
+
+CVPPPトレーナー「マキ先輩」として振り返りレポートをJSONで作成してください。
+※「患者様」という表記は絶対に使わず、「患者さん」または「佐藤さん」を使うこと。
+`;
+
+      const payload = {
+        contents: [{ role: "user", parts: [{ text: prompt }] }],
+        generationConfig: {
+          responseMimeType: "application/json",
+          responseSchema: {
+            type: "OBJECT",
+            properties: {
+              fun_title: { type: "STRING", description: "今回の対話スタイルを表す面白い称号（16文字以内）" },
+              best_utterance: { type: "STRING", description: "一番良かった声かけの引用とその理由（2〜3文）" },
+              improvement_example: { type: "STRING", description: "ここを変えるとさらに良くなる具体的な言い換え例と理由（2〜3文）" },
+              senpai_summary: { type: "STRING", description: "マキ先輩からの温かく鋭い総評（2〜3文）" }
+            },
+            required: ["fun_title", "best_utterance", "improvement_example", "senpai_summary"]
+          }
+        }
+      };
+
+      try {
+        const raw = await callGeminiAPI(payload, 2);
+        const parsed = JSON.parse(raw);
+        if (parsed.fun_title) el.resultTitle.textContent = parsed.fun_title;
+        el.reportBestLine.textContent = parsed.best_utterance;
+        el.reportImprovement.textContent = parsed.improvement_example;
+        el.reportSummary.textContent = parsed.senpai_summary;
+      } catch (err) {
+        console.error(err);
+        el.resultTitle.textContent = fallbackTitle;
+        el.reportBestLine.textContent = "佐藤さんの訴えに対して逃げずに向き合い、言葉でやり取りを重ねた点が大きな一歩です。";
+        el.reportImprovement.textContent = "「〜だからダメ」と理由を先に言う代わりに、「外に出たいくらい気になっていることがあるんですね」とまず感情を言語化して受け止め、そのうえで「静かな場所で5分聴くか、お茶を飲むか」など小さな選択肢を提示するとさらに効果的です。";
+        el.reportSummary.textContent = "レポートの自動分析で通信エラーが起きましたが、対話のログはそのまま振り返れます！もう一度「再生成」を押すこともできますよ。";
+        el.btnRetryReport.classList.remove("hidden");
+      } finally {
+        el.reportLoading.classList.add("hidden");
+        el.reportBody.classList.remove("hidden");
+      }
+    }
+
+    function openResultScreen() {
+      const meta = determineOutcomeMeta();
+      el.resultStatusPill.textContent = meta.pill;
+      el.resultStatusPill.className = `inline-block px-4 py-1 rounded-full text-xs sm:text-sm font-extrabold mb-2.5 ${meta.pillCls}`;
+      el.resultHeadline.textContent = meta.headline;
+      el.resultIcon.textContent = meta.icon;
+      el.resultTitle.textContent = meta.fallbackTitle;
+      el.resultExcitement.textContent = state.excitement;
+      el.resultTrust.textContent = state.trust;
+      el.resultTurns.textContent = `${state.turnsUsed}ターン`;
+
+      renderTagSummary();
+      renderLogInto(el.resultLogPanel);
+      el.resultLogPanel.classList.add("hidden");
+      showScreen("result");
+      generateFinalReport(meta.fallbackTitle);
+    }
+
+    // =========================================================================
+    // 8. マイク録音＆Geminiマルチモーダル音声認識 (MediaRecorder)
+    // =========================================================================
+    let mediaRecorder = null;
+    let mediaStream = null;
+    let audioChunks = [];
+    let isRecording = false;
+    let cancelRequested = false;
+    let recStartTime = 0;
+    let recTimerInterval = null;
+    const MAX_RECORDING_SECONDS = 30;
+
+    function getSupportedAudioMimeType() {
+      if (typeof MediaRecorder === "undefined") return "";
+      const candidates = [
+        "audio/webm;codecs=opus",
+        "audio/webm",
+        "audio/mp4",
+        "audio/ogg;codecs=opus"
+      ];
+      for (const type of candidates) {
+        if (MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported(type)) {
+          return type;
+        }
+      }
+      return "";
+    }
+
+    function blobToBase64(blob) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          const base64 = String(reader.result || "").split(",")[1];
+          if (base64) resolve(base64);
+          else reject(new Error("Base64 conversion failed"));
+        };
+        reader.onerror = () => reject(new Error("FileReader error"));
+        reader.readAsDataURL(blob);
+      });
+    }
+
+    function diagnoseMicError(err) {
+      const name = err?.name || "";
+      let reason = "マイクの起動に失敗しました";
+      if (!window.isSecureContext) {
+        reason = "HTTPSではない環境のためマイクが無効化されています";
+      } else if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        reason = "このブラウザまたはプレビュー環境（iframeの権限制約）がマイク録音に対応していません";
+      } else if (name === "NotAllowedError" || name === "PermissionDeniedError") {
+        reason = "ブラウザまたはプレビュー環境（iframe）の権限設定でマイクが許可されていません";
+      } else if (name === "NotFoundError" || name === "DevicesNotFoundError") {
+        reason = "利用可能なマイクが見つかりませんでした";
+      } else if (name === "NotReadableError" || name === "TrackStartError") {
+        reason = "他のアプリがマイクを使用中です";
+      } else if (name === "SecurityError") {
+        reason = "セキュリティポリシーによりマイクがブロックされています";
+      }
+      return `マイクを使用できません（原因：${reason}）。テキスト入力、または端末のキーボード音声入力をお使いください。`;
+    }
+
+    function resetRecordingUI() {
+      isRecording = false;
+      if (recTimerInterval) {
+        clearInterval(recTimerInterval);
+        recTimerInterval = null;
+      }
+      if (mediaStream) {
+        mediaStream.getTracks().forEach(t => t.stop());
+        mediaStream = null;
+      }
+      el.btnMic.classList.remove("bg-rose-600", "text-white", "mic-recording");
+      el.btnMic.classList.add("bg-slate-100", "text-slate-700");
+      el.btnMic.textContent = "🎤";
+      el.btnMic.title = "マイクで録音して話しかける";
+      el.recordingBar.classList.add("hidden");
+    }
+
+    async function startRecording() {
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia || typeof MediaRecorder === "undefined") {
+        showNotice(diagnoseMicError(null), false);
+        return;
+      }
+      try {
+        hideNotice();
+        mediaStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        const mimeType = getSupportedAudioMimeType();
+        mediaRecorder = new MediaRecorder(mediaStream, mimeType ? { mimeType } : undefined);
+        audioChunks = [];
+        cancelRequested = false;
+
+        mediaRecorder.ondataavailable = (e) => {
+          if (e.data && e.data.size > 0) audioChunks.push(e.data);
+        };
+
+        mediaRecorder.onstop = async () => {
+          const wasCancelled = cancelRequested;
+          const rawType = (mediaRecorder && mediaRecorder.mimeType) || mimeType || "audio/webm";
+          const cleanMimeType = rawType.split(";")[0].trim() || "audio/webm";
+          const chunks = [...audioChunks];
+          resetRecordingUI();
+
+          if (wasCancelled) {
+            playSFX("click");
+            return;
+          }
+          if (chunks.length === 0) {
+            showNotice("録音データが短すぎたため送信できませんでした。もう一度お試しください。", false);
+            return;
+          }
+          try {
+            const blob = new Blob(chunks, { type: cleanMimeType });
+            if (blob.size < 800) {
+              showNotice("音声が短すぎます。もう少しはっきり話しかけてみてください。", false);
+              return;
+            }
+            const base64Audio = await blobToBase64(blob);
+            await submitTurn({ mode: "audio", base64Audio, mimeType: cleanMimeType });
+          } catch (err) {
+            console.error(err);
+            showNotice("録音データの処理に失敗しました。テキスト入力でお試しください。", false);
+          }
+        };
+
+        mediaRecorder.start();
+        isRecording = true;
+        recStartTime = Date.now();
+        el.recordingTimer.textContent = "00:00";
+        recTimerInterval = setInterval(() => {
+          const sec = Math.floor((Date.now() - recStartTime) / 1000);
+          el.recordingTimer.textContent = `${String(Math.floor(sec / 60)).padStart(2, "0")}:${String(sec % 60).padStart(2, "0")}`;
+          if (sec >= MAX_RECORDING_SECONDS) stopRecording(false);
+        }, 300);
+
+        el.btnMic.classList.add("bg-rose-600", "text-white", "mic-recording");
+        el.btnMic.classList.remove("bg-slate-100", "text-slate-700");
+        el.btnMic.textContent = "⏹️";
+        el.btnMic.title = "録音を停止して送信する";
+        el.recordingBar.classList.remove("hidden");
+        playSFX("click");
+      } catch (err) {
+        resetRecordingUI();
+        showNotice(diagnoseMicError(err), false);
+      }
+    }
+
+    function stopRecording(cancel = false) {
+      cancelRequested = cancel;
+      if (mediaRecorder && mediaRecorder.state !== "inactive") {
+        mediaRecorder.stop();
+      } else {
+        resetRecordingUI();
+      }
+    }
+
+    // =========================================================================
+    // 9. ゲーム初期化・イベントリスナー
+    // =========================================================================
+    function startFreshSession() {
+      if (isRecording) stopRecording(true);
+      state.excitement = 70;
+      state.trust = 20;
+      state.turnsUsed = 0;
+      state.emotion = "angry";
+      state.isLoading = false;
+      state.gameEnded = false;
+      state.endReason = null;
+      state.allTags = [];
+      state.history = [];
+      state.lastFailedInput = null;
+
+      el.patientSpeech.textContent = INITIAL_SPEECH;
+      el.patientThought.textContent = INITIAL_THOUGHT;
+      el.senpaiComment.textContent = INITIAL_SENPAI;
+      el.turnTags.innerHTML = `<span class="px-2 py-0.5 rounded-full bg-teal-100 text-teal-800 text-[11px] font-bold">まずは感情を受け止めよう</span>`;
+      el.lastPlayerCard.classList.add("hidden");
+      el.playerInput.value = "";
+      el.playerInput.disabled = false;
+      el.btnSend.disabled = false;
+      el.btnMic.disabled = false;
+      hideNotice();
+
+      updatePlayUI(0, 0);
+      syncLogs();
+      showScreen("play");
+      el.playerInput.focus();
+    }
+
+    el.btnStart.addEventListener("click", () => {
+      playSFX("click");
+      startFreshSession();
+    });
+
+    el.btnRestart.addEventListener("click", () => {
+      playSFX("click");
+      startFreshSession();
+    });
+
+    el.btnReviewNow.addEventListener("click", () => {
+      if (state.turnsUsed === 0 || state.isLoading) return;
+      if (isRecording) stopRecording(true);
+      state.gameEnded = true;
+      state.endReason = "manual";
+      openResultScreen();
+    });
+
+    el.btnToggleSound.addEventListener("click", () => {
+      soundEnabled = !soundEnabled;
+      el.btnToggleSound.textContent = soundEnabled ? "🔊" : "🔇";
+      if (soundEnabled) playSFX("click");
+    });
+
+    el.btnToggleLogDrawer.addEventListener("click", () => {
+      playSFX("click");
+      const hidden = el.logDrawer.classList.toggle("hidden");
+      el.logChevron.style.transform = hidden ? "rotate(0deg)" : "rotate(180deg)";
+    });
+
+    el.btnToggleHints.addEventListener("click", () => {
+      playSFX("click");
+      const hidden = el.hintDrawer.classList.toggle("hidden");
+      el.hintChevron.style.transform = hidden ? "rotate(0deg)" : "rotate(180deg)";
+    });
+
+    el.hintChips.forEach(chip => {
+      chip.addEventListener("click", () => {
+        if (state.isLoading || state.gameEnded) return;
+        playSFX("click");
+        el.playerInput.value = chip.dataset.phrase;
+        el.playerInput.focus();
+      });
+    });
+
+    el.btnMic.addEventListener("click", () => {
+      if (state.isLoading || state.gameEnded) return;
+      if (isRecording) stopRecording(false);
+      else startRecording();
+    });
+
+    el.btnCancelRec.addEventListener("click", () => {
+      if (isRecording) stopRecording(true);
+    });
+
+    el.chatForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      if (isRecording) {
+        stopRecording(false);
+        return;
+      }
+      submitTurn({ mode: "text", text: el.playerInput.value });
+    });
+
+    el.playerInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" && !e.shiftKey && !e.isComposing) {
+        e.preventDefault();
+        if (isRecording) {
+          stopRecording(false);
+          return;
+        }
+        submitTurn({ mode: "text", text: el.playerInput.value });
+      }
+    });
+
+    el.btnRetryLast.addEventListener("click", () => {
+      if (!state.lastFailedInput || state.isLoading) return;
+      submitTurn(state.lastFailedInput);
+    });
+
+    el.btnRetryReport.addEventListener("click", () => {
+      generateFinalReport(el.resultTitle.textContent);
+    });
+
+    el.btnToggleResultLog.addEventListener("click", () => {
+      playSFX("click");
+      el.resultLogPanel.classList.toggle("hidden");
+    });
+  </script>
+</body>
+</html>
